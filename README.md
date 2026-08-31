@@ -26,7 +26,8 @@ RSSI, packet loss, and delay behavior.
 | `scripts/` | Entry points that launch FIT IoT-LAB and/or Cooja experiments and compare metrics: `run_unified.sh`, `run_cooja_only.sh`, `run_fit_only.sh`, `run_interference_experiment.sh`, `submit_dataset.sh`. |
 | `templates/` | Cooja `.csc` simulation templates. |
 | `tools/` | Log parsing, KPI extraction, plotting, and analysis scripts shared by the run scripts, plus `run_one_sim.py` (the per-combination worker `submit_dataset.sh` submits to SLURM). |
-| `datasets/`, `parameter-combination/` | Testbed-vs-simulation datasets and the parameter grid (`combinations.csv`) they were generated from. |
+| `datasets/` | Testbed-vs-simulation datasets. |
+| `parameter-combination/` | `combinations.csv` — the parameter grid `submit_dataset.sh` sweeps over — and `summary.txt` describing it. `generate_combinations.py` (re)produces the full clean grid from the same value lists, for extending the study; see the comment at the top of that file for why it isn't a byte-identical replay of the current `combinations.csv`. |
 | `calibration-model/` | Notebooks and trained MLP models (PyTorch) that predict Cooja radio parameters from testbed KPIs, plus the training datasets. |
 | `what-if/`, `scenarios-setup/` | Parameter-sensitivity sweep scripts/datasets and the per-scenario node layouts they use. |
 | `adaptive-pipeline/` | The adaptive calibration pipeline: `predict_params.py` predicts parameters from live KPIs, `adaptive_monitor.py` monitors for drift and re-triggers calibration, `app.py` is a small web UI to run/inspect it. |
