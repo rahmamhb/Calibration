@@ -16,10 +16,10 @@
 # the interferer groups later (as their own experiments) would leave those
 # nodes unreserved in the meantime, so another testbed user could grab them
 # before the interference phase starts. Instead, the join/leave timing is
-# baked into the interferer firmware itself (firmwares/senderInterferer.c,
+# baked into the interferer firmware itself (contiki-firmware/FitIot-Lab/senderInterferer.c,
 # compiled twice with different DELAY_S/ACTIVE_S) — each interferer node's
 # own clock decides when to start/stop flooding, the same way
-# firmwares/senderTX.c already drives its TX-power phases on-device.
+# contiki-firmware/FitIot-Lab/senderTX.c already drives its TX-power phases on-device.
 #
 # Usage:
 #   ./run_interference_experiment.sh [options]
@@ -163,8 +163,8 @@ if [ $? -ne 0 ]; then
 fi
 echo "  ✓ sender.iotlab-m3 + receiver.iotlab-m3"
 
-echo "  → uploading interferer source ($REPO_DIR/firmwares/senderInterferer.c)..."
-scp -q -o LogLevel=ERROR "$REPO_DIR/firmwares/senderInterferer.c" "${SSH_HOST}:${FIRMWARE_FITIOT}/senderInterferer.c"
+echo "  → uploading interferer source ($REPO_DIR/contiki-firmware/FitIot-Lab/senderInterferer.c)..."
+scp -q -o LogLevel=ERROR "$REPO_DIR/contiki-firmware/FitIot-Lab/senderInterferer.c" "${SSH_HOST}:${FIRMWARE_FITIOT}/senderInterferer.c"
 if [ $? -ne 0 ]; then
     echo "  ✗ Failed to upload senderInterferer.c — aborting"
     exit 1
@@ -297,7 +297,7 @@ Interferer group 2  : m3-$(echo $INTERFERER2_NODES | tr '+' ',')
 Stable phase duration      : ${STABLE_MIN} min
 Interference phase duration : ${PHASE_MIN} min
 Total duration      : ${TOTAL_DURATION} min
-Phases (on-device timers, see firmwares/senderInterferer.c):
+Phases (on-device timers, see contiki-firmware/FitIot-Lab/senderInterferer.c):
   Phase 0  STABLE       [0, ${STABLE_MIN})min                              main senders only
   Phase 1  INTERFERE-1  [${STABLE_MIN}, $((STABLE_MIN+PHASE_MIN)))min                        + interferer group 1
   Phase 2  INTERFERE-2  [$((STABLE_MIN+PHASE_MIN)), $((STABLE_MIN+PHASE_MIN*2)))min                        + interferer group 2 (both active)

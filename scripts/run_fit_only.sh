@@ -161,7 +161,7 @@ Duration    : $DURATION min
 CSMA config : min_be=$CSMA_MIN_BE max_be=$CSMA_MAX_BE max_backoff=$CSMA_MAX_BACKOFF max_frame_retries=$CSMA_MAX_FRAME_RETRIES
 EXPEOF
 
-# tx_power phase firmware (firmwares/senderTX.c) auto-switches TX power on a
+# tx_power phase firmware (contiki-firmware/FitIot-Lab/senderTX.c) auto-switches TX power on a
 # timer — only meaningful when that firmware is actually deployed.
 if [[ "$FIRMWARE_FITIOT" == *senderTX* || "$FIRMWARE_FITIOT" == *tx_power* ]]; then
 cat << EXPEOF

@@ -8,7 +8,7 @@ RSSI, packet loss, and delay behavior.
 ## Approach
 
 1. Run the same firmware on FIT IoT-LAB hardware and in Cooja, under matching
-   traffic patterns (single link, many-to-one, and interference scenarios).
+   traffic patterns (single link and interference scenarios).
 2. Compare the resulting KPIs (RSSI, loss rate, delay) between testbed and
    simulation.
 3. Train a model (`calibration-model/`) that predicts the Cooja radio
@@ -22,22 +22,29 @@ RSSI, packet loss, and delay behavior.
 
 | Path | Contents |
 |---|---|
-| `contiki-firmware/` | Custom Contiki-NG firmware (source + Makefile) run on both FIT IoT-LAB and Cooja: `radio-link-quality` (single sender/receiver) and `many-to-one-traffic-simu` (many-to-one traffic). |
-| `firmwares/` | Additional sender/interferer firmware variants used in Cooja-only experiments. |
+| `contiki-firmware/` | Firmware source to drop into your own Contiki-NG checkout — not a buildable-in-place tree (see below). `Cooja/` is the sender/receiver pair run inside Cooja; `FitIot-Lab/` holds the sender variants (TX-power phases, interferer, best-known-config) flashed on real FIT IoT-LAB nodes. |
 | `scripts/` | Entry points that launch FIT IoT-LAB and/or Cooja experiments and compare metrics: `run_unified.sh`, `run_cooja_only.sh`, `run_fit_only.sh`, `run_interference_experiment.sh`, `submit_dataset.sh`. |
 | `templates/` | Cooja `.csc` simulation templates. |
-| `tools/` | Log parsing, KPI extraction, plotting, and analysis scripts shared by the run scripts. |
-| `dataset/`, `parameter-combination/` | Testbed-vs-simulation datasets and the parameter grids they were generated from. |
+| `tools/` | Log parsing, KPI extraction, plotting, and analysis scripts shared by the run scripts, plus `run_one_sim.py` (the per-combination worker `submit_dataset.sh` submits to SLURM). |
+| `datasets/`, `parameter-combination/` | Testbed-vs-simulation datasets and the parameter grid (`combinations.csv`) they were generated from. |
 | `calibration-model/` | Notebooks and trained MLP models (PyTorch) that predict Cooja radio parameters from testbed KPIs, plus the training datasets. |
 | `what-if/`, `scenarios-setup/` | Parameter-sensitivity sweep scripts/datasets and the per-scenario node layouts they use. |
 | `adaptive-pipeline/` | The adaptive calibration pipeline: `predict_params.py` predicts parameters from live KPIs, `adaptive_monitor.py` monitors for drift and re-triggers calibration, `app.py` is a small web UI to run/inspect it. |
 
 ## Reproducing an experiment
 
+`contiki-firmware/` holds source files, not a ready-to-build example: Contiki-NG
+expects firmware under its own `examples/` tree, and FIT IoT-LAB expects its own
+profile/experiment setup. Copy the files in first, then build:
+
 ```bash
-# Build and run the radio-link-quality firmware in Cooja
-cd contiki-firmware/radio-link-quality
-make TARGET=cooja
+# Cooja: copy into your own Contiki-NG checkout and build there
+cp -r contiki-firmware/Cooja ~/contiki-ng/examples/radio-link-quality
+cd ~/contiki-ng/examples/radio-link-quality && make TARGET=cooja
+
+# FIT IoT-LAB: copy the sender variant you need into your own profile/example
+# directory before compiling for TARGET=iotlab-m3 (see scripts/run_interference_experiment.sh
+# for how sender variants get uploaded and compiled on the FIT IoT-LAB frontend)
 
 # From the repo root, run a matched FIT IoT-LAB + Cooja experiment
 ./scripts/run_unified.sh -u <iot-lab-username> -n 3+4+5 -r 2 -d 5

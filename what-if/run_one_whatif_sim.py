@@ -161,7 +161,7 @@ def main():
     # STEP 4 — run analysis -> metrics.csv
     print(f"[sim {sim_id}/{topology}] [4/4] Running analysis...")
     ok = run_cmd([
-        "python3", f"{PROJECT_DIR}/run_analysis.py",
+        "python3", f"{TOOLS_DIR}/run_analysis.py",
         "--dir",   str(cooja_dir),
         "--nodes", str(topo["nb_senders"]),
     ], "run_analysis.py")

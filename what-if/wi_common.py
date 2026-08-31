@@ -32,7 +32,7 @@ LOGS_DIR         = f"{WHATIF_DIR}/logs"
 # existing convention elsewhere in this repo (predict_params.py).
 TOPOLOGIES = {
     "Sc4": {
-        "positions":            f'{PROJECT_DIR}/Scenarios Setup/node_positions_Sc4.json',
+        "positions":            f'{PROJECT_DIR}/scenarios-setup/node_positions_Sc4.json',
         "nb_senders":           20,
         "nb_packets":           15,
         "rx_sensitivity":       -100.0,
@@ -41,7 +41,7 @@ TOPOLOGIES = {
         "awgn_sigma":           15.471,
     },
     "Sc9": {
-        "positions":            f'{PROJECT_DIR}/Scenarios Setup/node_positions_Sc9.json',
+        "positions":            f'{PROJECT_DIR}/scenarios-setup/node_positions_Sc9.json',
         "nb_senders":           5,
         "nb_packets":           15,
         "rx_sensitivity":       -100.0,
@@ -50,7 +50,7 @@ TOPOLOGIES = {
         "awgn_sigma":           25.5253,
     },
     "Sc3": {
-        "positions":            f'{PROJECT_DIR}/Scenarios Setup/node_positions_Sc3.json', "nb_senders": 10,
+        "positions":            f'{PROJECT_DIR}/scenarios-setup/node_positions_Sc3.json', "nb_senders": 10,
         "nb_packets":           5,
         "rx_sensitivity":       -100.0,
         "rssi_inflection_point": -77.7012,

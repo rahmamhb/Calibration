@@ -15,7 +15,7 @@
 
 # ── EDIT THESE ────────────────────────────────────────────────────────────────
 PROJECT_DIR="/home/mihoubrahma/cooja-sim"
-COMBINATIONS_CSV="$PROJECT_DIR/combinations.csv"
+COMBINATIONS_CSV="$PROJECT_DIR/parameter-combination/combinations.csv"
 DATASET_CSV="$PROJECT_DIR/dataset.csv"
 LOGS_DIR="$PROJECT_DIR/logs/dataset"
 # ─────────────────────────────────────────────────────────────────────────────
@@ -61,7 +61,7 @@ while IFS=',' read -r id rx_sens rssi_ip tr ple awgn; do
         --time=03:00:00 \
         --output="${LOGS_DIR}/${id}.out" \
         --error="${LOGS_DIR}/${id}.err" \
-        --wrap="python3 $PROJECT_DIR/run_one_sim.py \
+        --wrap="python3 $PROJECT_DIR/tools/run_one_sim.py \
             --id $id \
             --rx-sensitivity $rx_sens \
             --rssi-inflection-point $rssi_ip \

@@ -175,7 +175,7 @@ def main():
     # STEP 4 — run analysis → metrics.csv (single row, 9 metrics)
     print(f"[sim {sim_id}] [4/4] Running analysis...")
     ok = run_cmd([
-        "python3", f"{PROJECT_DIR}/run_analysis.py",
+        "python3", f"{TOOLS_DIR}/run_analysis.py",
         "--dir",   str(cooja_dir),
         "--nodes", str(NB_SENDERS),
     ], "run_analysis.py")
