@@ -41,6 +41,7 @@ CSMA_MAX_BE=4
 CSMA_MAX_BACKOFF=5
 CSMA_MAX_FRAME_RETRIES=7
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 # ---------- Parse arguments -------------------------------------------------
 while getopts "u:n:r:d:s:C:F:K:P:B:E:X:R:" opt; do
@@ -65,7 +66,7 @@ done
 # ---------- Derived values --------------------------------------------------
 TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
 EXP_NAME="exp_${TIMESTAMP}"
-RESULTS_BASE="$SCRIPT_DIR/results/$EXP_NAME"
+RESULTS_BASE="$REPO_DIR/results/$EXP_NAME"
 FITIOT_DIR="$RESULTS_BASE/fitiot"
 COOJA_DIR="$RESULTS_BASE/cooja"
 SSH_HOST="${USER_LOGIN}@${SITE}.iot-lab.info"
@@ -110,7 +111,7 @@ echo "[2/7] Fetching node positions from FIT IoT-LAB..."
 
 POSITIONS_FILE="$RESULTS_BASE/node_positions.json"
 
-python3 "$SCRIPT_DIR/tools/get_fitiot_positions.py" \
+python3 "$REPO_DIR/tools/get_fitiot_positions.py" \
     --host "$SSH_HOST" \
     --nodes "$ALL_NODES" \
     --receiver "$RECEIVER_NODE" \
@@ -130,8 +131,8 @@ echo "[3/7] Generating Cooja simulation file with IoT-LAB positions..."
 
 CSC_FILE="$RESULTS_BASE/simulation.csc"
 
-python3 "$SCRIPT_DIR/tools/generate_csc.py" \
-    --template "$SCRIPT_DIR/templates/radio-link-quality.csc" \
+python3 "$REPO_DIR/tools/generate_csc.py" \
+    --template "$REPO_DIR/templates/radio-link-quality.csc" \
     --positions "$POSITIONS_FILE" \
     --firmware-dir "$FIRMWARE_COOJA" \
     --duration "$DURATION" \
@@ -150,7 +151,7 @@ echo ""
 echo "[4/7] Launching FIT IoT-LAB and Cooja in parallel..."
 
 # --- Cooja headless in background (no stdin needed) ---
-bash "$SCRIPT_DIR/tools/run_cooja.sh" \
+bash "$REPO_DIR/tools/run_cooja.sh" \
     -C "$COOJA_PATH" \
     -f "$CSC_FILE" \
     -d "$DURATION" \
@@ -160,7 +161,7 @@ echo "  → Cooja running in background (PID $COOJA_PID)..."
 
 # --- FIT IoT-LAB in foreground (serial_aggregator needs SSH stdin) ---
 echo "  → Starting FIT IoT-LAB experiment (foreground)..."
-bash "$SCRIPT_DIR/tools/run_fitiot.sh" \
+bash "$REPO_DIR/tools/run_fitiot.sh" \
     -u "$USER_LOGIN" \
     -n "$SENDER_NODES" \
     -r "$RECEIVER_NODE" \
@@ -198,7 +199,7 @@ echo ""
 echo "[5/7] Normalizing Cooja log format..."
 
 if [ -f "$COOJA_DIR/loglistener.txt" ]; then
-    python3 "$SCRIPT_DIR/tools/convert_cooja_log.py" \
+    python3 "$REPO_DIR/tools/convert_cooja_log.py" \
         --input "$COOJA_DIR/loglistener.txt" \
         --output "$COOJA_DIR/serial.log"
 
@@ -219,7 +220,7 @@ echo "[6/7] Computing metrics..."
 
 if [ -f "$FITIOT_DIR/serial.log" ]; then
     echo "  → FIT IoT-LAB metrics:"
-    python3 "$SCRIPT_DIR/tools/run_analysis.py" \
+    python3 "$REPO_DIR/tools/run_analysis.py" \
         --dir     "$FITIOT_DIR" \
         --nodes   "$NB_SENDERS" \
         --oml-dir "$FITIOT_DIR"
@@ -229,7 +230,7 @@ fi
 
 if [ -f "$COOJA_DIR/serial.log" ]; then
     echo "  → Cooja metrics:"
-    python3 "$SCRIPT_DIR/tools/run_analysis.py" \
+    python3 "$REPO_DIR/tools/run_analysis.py" \
         --dir   "$COOJA_DIR" \
         --nodes "$NB_SENDERS"
 else
@@ -242,7 +243,7 @@ fi
 echo ""
 echo "[7/7] Generating comparison graphs..."
 
-python3 "$SCRIPT_DIR/tools/plot_comparison.py" \
+python3 "$REPO_DIR/tools/plot_comparison.py" \
     --fitiot-dir "$FITIOT_DIR" \
     --cooja-dir  "$COOJA_DIR" \
     --output-dir "$RESULTS_BASE"

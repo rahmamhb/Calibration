@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
 predict_params.py  —  CRAN SERVER ONLY
-Deploy to: /home/mihoubrahma/cooja-sim/predict_params.py
+Deploy to: /home/mihoubrahma/cooja-sim/adaptive-pipeline/predict_params.py
 
 Called via SSH by adaptive_monitor.py:
-    python3 /home/mihoubrahma/cooja-sim/predict_params.py --kpis "..."
+    python3 /home/mihoubrahma/cooja-sim/adaptive-pipeline/predict_params.py --kpis "..."
 
 Output (stdout, one CSV line):
     path_loss_exponent,awgn_sigma,rssi_inflection_point,rx_sensitivity

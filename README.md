@@ -23,14 +23,14 @@ RSSI, packet loss, and delay behavior.
 | Path | Contents |
 |---|---|
 | `contiki-firmware/` | Custom Contiki-NG firmware (source + Makefile) run on both FIT IoT-LAB and Cooja: `radio-link-quality` (single sender/receiver) and `many-to-one-traffic-simu` (many-to-one traffic). |
-| `Firmwares/` | Additional sender/interferer firmware variants used in Cooja-only experiments. |
-| `run_unified.sh`, `run_cooja_only.sh`, `run_fit_only.sh`, `run_interference_experiment.sh` | Entry points that launch FIT IoT-LAB and/or Cooja experiments and compare metrics. |
+| `firmwares/` | Additional sender/interferer firmware variants used in Cooja-only experiments. |
+| `scripts/` | Entry points that launch FIT IoT-LAB and/or Cooja experiments and compare metrics: `run_unified.sh`, `run_cooja_only.sh`, `run_fit_only.sh`, `run_interference_experiment.sh`, `submit_dataset.sh`. |
 | `templates/` | Cooja `.csc` simulation templates. |
 | `tools/` | Log parsing, KPI extraction, plotting, and analysis scripts shared by the run scripts. |
 | `dataset/`, `parameter-combination/` | Testbed-vs-simulation datasets and the parameter grids they were generated from. |
 | `calibration-model/` | Notebooks and trained MLP models (PyTorch) that predict Cooja radio parameters from testbed KPIs, plus the training datasets. |
 | `what-if/`, `scenarios-setup/` | Parameter-sensitivity sweep scripts/datasets and the per-scenario node layouts they use. |
-| `predict_params.py`, `adaptive_monitor.py`, `app.py` | The adaptive calibration pipeline: predicts parameters from live KPIs, monitors for drift, and a small web UI to run/inspect it. |
+| `adaptive-pipeline/` | The adaptive calibration pipeline: `predict_params.py` predicts parameters from live KPIs, `adaptive_monitor.py` monitors for drift and re-triggers calibration, `app.py` is a small web UI to run/inspect it. |
 
 ## Reproducing an experiment
 
@@ -40,16 +40,16 @@ cd contiki-firmware/radio-link-quality
 make TARGET=cooja
 
 # From the repo root, run a matched FIT IoT-LAB + Cooja experiment
-./run_unified.sh -u <iot-lab-username> -n 3+4+5 -r 2 -d 5
+./scripts/run_unified.sh -u <iot-lab-username> -n 3+4+5 -r 2 -d 5
 ```
 
-See the `-h`/usage comments at the top of each `run_*.sh` script for the
-full option list.
+See the `-h`/usage comments at the top of each `scripts/run_*.sh` script for
+the full option list.
 
 ## Note on the adaptive pipeline
 
-`predict_params.py`, `adaptive_monitor.py`, and `app.py` were built to run on
-a specific compute server (paths and model locations are hardcoded, e.g.
-`predict_params.py` expects the trained models under
+`adaptive-pipeline/predict_params.py`, `adaptive_monitor.py`, and `app.py`
+were built to run on a specific compute server (paths and model locations
+are hardcoded, e.g. `predict_params.py` expects the trained models under
 `/home/<user>/Calibration models/`). To run them elsewhere, point those
 paths at your local `calibration-model/` directory.

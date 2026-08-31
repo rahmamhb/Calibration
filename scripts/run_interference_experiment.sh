@@ -16,10 +16,10 @@
 # the interferer groups later (as their own experiments) would leave those
 # nodes unreserved in the meantime, so another testbed user could grab them
 # before the interference phase starts. Instead, the join/leave timing is
-# baked into the interferer firmware itself (Firmwares/senderInterferer.c,
+# baked into the interferer firmware itself (firmwares/senderInterferer.c,
 # compiled twice with different DELAY_S/ACTIVE_S) — each interferer node's
 # own clock decides when to start/stop flooding, the same way
-# Firmwares/senderTX.c already drives its TX-power phases on-device.
+# firmwares/senderTX.c already drives its TX-power phases on-device.
 #
 # Usage:
 #   ./run_interference_experiment.sh [options]
@@ -53,6 +53,7 @@ ARM_GCC="/opt/gcc-arm-none-eabi-9-2020-q2-update/bin"
 PROFILE_NAME="rssi_11_monitor"
 NB_PACKETS=1
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 # ---------- Parse arguments -------------------------------------------------
 while getopts "u:s:r:n:i:j:b:p:d:F:P:" opt; do
@@ -83,7 +84,7 @@ fi
 # ---------- Derived values --------------------------------------------------
 TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
 EXP_NAME="interference_${TIMESTAMP}"
-RESULTS_BASE="$SCRIPT_DIR/results/$EXP_NAME"
+RESULTS_BASE="$REPO_DIR/results/$EXP_NAME"
 OUTPUT_DIR="$RESULTS_BASE/main"
 SSH_HOST="${USER_LOGIN}@${SITE}.iot-lab.info"
 ALL_NODES="${RECEIVER_NODE}+${MAIN_SENDERS}+${INTERFERER1_NODES}+${INTERFERER2_NODES}"
@@ -115,7 +116,7 @@ echo "=============================================="
 echo ""
 echo "[0/6] Fetching node positions..."
 POSITIONS_FILE="$RESULTS_BASE/node_positions.json"
-python3 "$SCRIPT_DIR/tools/get_fitiot_positions.py" \
+python3 "$REPO_DIR/tools/get_fitiot_positions.py" \
     --host "$SSH_HOST" \
     --nodes "$ALL_NODES" \
     --receiver "$RECEIVER_NODE" \
@@ -162,8 +163,8 @@ if [ $? -ne 0 ]; then
 fi
 echo "  ✓ sender.iotlab-m3 + receiver.iotlab-m3"
 
-echo "  → uploading interferer source ($SCRIPT_DIR/Firmwares/senderInterferer.c)..."
-scp -q -o LogLevel=ERROR "$SCRIPT_DIR/Firmwares/senderInterferer.c" "${SSH_HOST}:${FIRMWARE_FITIOT}/senderInterferer.c"
+echo "  → uploading interferer source ($REPO_DIR/firmwares/senderInterferer.c)..."
+scp -q -o LogLevel=ERROR "$REPO_DIR/firmwares/senderInterferer.c" "${SSH_HOST}:${FIRMWARE_FITIOT}/senderInterferer.c"
 if [ $? -ne 0 ]; then
     echo "  ✗ Failed to upload senderInterferer.c — aborting"
     exit 1
@@ -260,18 +261,18 @@ echo ""
 echo "[6/6] Computing metrics..."
 
 if [ -f "$OUTPUT_DIR/serial.log" ]; then
-    python3 "$SCRIPT_DIR/tools/run_analysis.py" \
+    python3 "$REPO_DIR/tools/run_analysis.py" \
         --dir     "$OUTPUT_DIR" \
         --nodes   "$NB_MAIN_SENDERS" \
         --oml-dir "$OUTPUT_DIR"
 
-    python3 "$SCRIPT_DIR/tools/plot_single.py" \
+    python3 "$REPO_DIR/tools/plot_single.py" \
         --dir        "$OUTPUT_DIR" \
         --label      "Main (with interference)" \
         --output-dir "$RESULTS_BASE"
 
     echo "  → Per-phase time evolution (window = ${PHASE_MIN} min, matches the 4 phases)..."
-    python3 "$SCRIPT_DIR/tools/plot_time_evolution.py" \
+    python3 "$REPO_DIR/tools/plot_time_evolution.py" \
         --log     "$OUTPUT_DIR/serial.log" \
         --window  "$(( PHASE_MIN * 60 ))" \
         --nodes   "$NB_MAIN_SENDERS" \
@@ -296,7 +297,7 @@ Interferer group 2  : m3-$(echo $INTERFERER2_NODES | tr '+' ',')
 Stable phase duration      : ${STABLE_MIN} min
 Interference phase duration : ${PHASE_MIN} min
 Total duration      : ${TOTAL_DURATION} min
-Phases (on-device timers, see Firmwares/senderInterferer.c):
+Phases (on-device timers, see firmwares/senderInterferer.c):
   Phase 0  STABLE       [0, ${STABLE_MIN})min                              main senders only
   Phase 1  INTERFERE-1  [${STABLE_MIN}, $((STABLE_MIN+PHASE_MIN)))min                        + interferer group 1
   Phase 2  INTERFERE-2  [$((STABLE_MIN+PHASE_MIN)), $((STABLE_MIN+PHASE_MIN*2)))min                        + interferer group 2 (both active)

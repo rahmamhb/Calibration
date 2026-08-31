@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 app.py  —  Flask UI, runs on the CRAN server
-Place at: ~/cooja-sim/app.py
+Place at: ~/cooja-sim/adaptive-pipeline/app.py
 Run:      python3 app.py
 Access:   ssh -L 6001:localhost:6001 <user>@<server-ip>
           then open http://localhost:6001 in your local browser
@@ -15,6 +15,7 @@ pipeline_running = False
 output_queue     = queue.Queue()
 
 BASE_DIR = Path(__file__).parent
+REPO_DIR = BASE_DIR.parent
 
 HTML = r"""<!DOCTYPE html>
 <html lang="en">
@@ -429,20 +430,20 @@ def _plot_loss_evolution(run_dir, real_loss, sim_loss, change_windows=None):
 
 
 def pipeline_thread(cfg, q):
-    sys.path.insert(0, str(BASE_DIR / "tools"))
+    sys.path.insert(0, str(REPO_DIR / "tools"))
     from kpi_extractor   import extract_kpis
     from change_detector import PageHinkley
     from sender_roles    import find_node_positions, get_main_senders
 
-    RESULTS_DIR   = BASE_DIR / "results"
-    TEMPLATES_DIR = BASE_DIR / "templates"
+    RESULTS_DIR   = REPO_DIR / "results"
+    TEMPLATES_DIR = REPO_DIR / "templates"
     MODELS_DIR    = Path("/home/mihoubrahma/Calibration models")
 
     window_s = int(cfg["window"])
     step_s   = int(cfg["step"])
     n_nodes  = int(cfg["nodes"])
     speed    = float(cfg["speed"])
-    log_path = str(BASE_DIR / cfg["log"])
+    log_path = str(REPO_DIR / cfg["log"])
 
     # Each experiment carries its own node_positions.json next to the log
     # (e.g. results/ScenarioNN/node_positions.json) — use that instead of a
@@ -505,7 +506,7 @@ def pipeline_thread(cfg, q):
             w.writerow(row)
 
     def run_local(cmd):
-        r=subprocess.run(cmd,capture_output=True,text=True,cwd=str(BASE_DIR))
+        r=subprocess.run(cmd,capture_output=True,text=True,cwd=str(REPO_DIR))
         return r.returncode,r.stdout.strip(),r.stderr.strip()
 
     detector = PageHinkley(delta=0.5, threshold=5.0, burn_in=3, cooldown=10)
@@ -579,7 +580,7 @@ def pipeline_thread(cfg, q):
             # reach generate_csc.py inside run_cooja_only.sh without being
             # overwritten by its defaults.
             q.put({"type":"simstart","wid":wid})
-            sim_cmd=["bash",str(BASE_DIR/"run_cooja_only.sh"),
+            sim_cmd=["bash",str(REPO_DIR/"scripts"/"run_cooja_only.sh"),
                      "-d","3",
                      "-p",str(POSITIONS),
                      "-g","40",
@@ -592,7 +593,7 @@ def pipeline_thread(cfg, q):
 
             # Find the cooja output folder just created and move it under sim_dir
             import glob as _glob, shutil as _shutil
-            cooja_runs=sorted(_glob.glob(str(BASE_DIR/"results"/"cooja_*")))
+            cooja_runs=sorted(_glob.glob(str(REPO_DIR/"results"/"cooja_*")))
             if not cooja_runs: q.put({"type":"error","msg":f"[W{wid}] cooja output not found"}); append(row); continue
             cooja_out=Path(cooja_runs[-1])
             dest=sim_dir/"cooja_out"
@@ -643,7 +644,7 @@ def pipeline_thread(cfg, q):
     try:
         pp = _plot_loss_evolution(run_dir, real_loss_series, sim_loss_series, change_windows_series)
         if pp:
-            plot_url = "/results/" + str(pp.relative_to(BASE_DIR / "results"))
+            plot_url = "/results/" + str(pp.relative_to(REPO_DIR / "results"))
     except Exception:
         pass
     q.put({"type":"done","total":wid,"out":str(out_csv),"plot_url":plot_url})
@@ -686,7 +687,7 @@ def stream():
 @app.route("/results/<path:filename>")
 def serve_result(filename):
     from flask import send_from_directory
-    return send_from_directory(str(BASE_DIR / "results"), filename)
+    return send_from_directory(str(REPO_DIR / "results"), filename)
 
 if __name__=="__main__":
     print("Adaptive calibration monitor — server mode")

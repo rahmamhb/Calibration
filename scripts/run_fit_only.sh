@@ -33,6 +33,7 @@ CSMA_MAX_BE=4
 CSMA_MAX_BACKOFF=5
 CSMA_MAX_FRAME_RETRIES=7
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 # ---------- Parse arguments -------------------------------------------------
 while getopts "u:n:r:d:s:F:P:D:B:E:K:R:" opt; do
@@ -58,7 +59,7 @@ done
 : "${PHASE_DURATION_S:=$(( DURATION * 60 / 4 ))}"
 TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
 EXP_NAME="fitiot_${TIMESTAMP}"
-RESULTS_BASE="$SCRIPT_DIR/results/$EXP_NAME"
+RESULTS_BASE="$REPO_DIR/results/$EXP_NAME"
 FITIOT_DIR="$RESULTS_BASE/fitiot"
 SSH_HOST="${USER_LOGIN}@${SITE}.iot-lab.info"
 ALL_NODES="${RECEIVER_NODE}+${SENDER_NODES}"
@@ -86,7 +87,7 @@ echo "[1/5] Fetching node positions from FIT IoT-LAB..."
 
 POSITIONS_FILE="$RESULTS_BASE/node_positions.json"
 
-python3 "$SCRIPT_DIR/tools/get_fitiot_positions.py" \
+python3 "$REPO_DIR/tools/get_fitiot_positions.py" \
     --host "$SSH_HOST" \
     --nodes "$ALL_NODES" \
     --receiver "$RECEIVER_NODE" \
@@ -111,7 +112,7 @@ FIT_ARGS=(-u "$USER_LOGIN" -n "$SENDER_NODES" -r "$RECEIVER_NODE" \
           -K "$CSMA_MAX_BACKOFF" -R "$CSMA_MAX_FRAME_RETRIES")
 [ -n "$PHASE_DURATION_S" ] && FIT_ARGS+=(-D "$PHASE_DURATION_S")
 
-bash "$SCRIPT_DIR/tools/run_fitiot.sh" "${FIT_ARGS[@]}"
+bash "$REPO_DIR/tools/run_fitiot.sh" "${FIT_ARGS[@]}"
 
 if [ $? -ne 0 ]; then
     echo "  ✗ FIT IoT-LAB experiment failed — aborting"
@@ -130,7 +131,7 @@ if [ ! -f "$FITIOT_DIR/serial.log" ]; then
     exit 1
 fi
 
-python3 "$SCRIPT_DIR/tools/run_analysis.py" \
+python3 "$REPO_DIR/tools/run_analysis.py" \
     --dir     "$FITIOT_DIR" \
     --nodes   "$NB_SENDERS" \
     --oml-dir "$FITIOT_DIR"
@@ -160,7 +161,7 @@ Duration    : $DURATION min
 CSMA config : min_be=$CSMA_MIN_BE max_be=$CSMA_MAX_BE max_backoff=$CSMA_MAX_BACKOFF max_frame_retries=$CSMA_MAX_FRAME_RETRIES
 EXPEOF
 
-# tx_power phase firmware (Firmwares/senderTX.c) auto-switches TX power on a
+# tx_power phase firmware (firmwares/senderTX.c) auto-switches TX power on a
 # timer — only meaningful when that firmware is actually deployed.
 if [[ "$FIRMWARE_FITIOT" == *senderTX* || "$FIRMWARE_FITIOT" == *tx_power* ]]; then
 cat << EXPEOF
@@ -183,7 +184,7 @@ echo "  ✓ Summary saved: $RESULTS_BASE/experiment_info.txt"
 echo ""
 echo "[5/5] Plotting metrics..."
 
-python3 "$SCRIPT_DIR/tools/plot_single.py" \
+python3 "$REPO_DIR/tools/plot_single.py" \
     --dir        "$FITIOT_DIR" \
     --label      "FIT IoT-LAB" \
     --output-dir "$RESULTS_BASE"

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 adaptive_monitor.py  —  runs directly on the CRAN server
-Place at: ~/cooja-sim/adaptive_monitor.py
+Place at: ~/cooja-sim/adaptive-pipeline/adaptive_monitor.py
 
 Usage:
     python3 adaptive_monitor.py \
@@ -25,7 +25,7 @@ import time
 from pathlib import Path
 
 # ── local tools ───────────────────────────────────────────────
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "tools"))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "tools"))
 from kpi_extractor   import extract_kpis
 from change_detector import PageHinkley
 from sender_roles    import find_node_positions, get_main_senders
@@ -33,11 +33,12 @@ from sender_roles    import find_node_positions, get_main_senders
 # ─────────────────────────────────────────────────────────────
 # CONFIG  (all local — no SSH)
 # ─────────────────────────────────────────────────────────────
-BASE_DIR      = Path(__file__).parent          # ~/cooja-sim/
-RESULTS_DIR   = BASE_DIR / "results"
+BASE_DIR      = Path(__file__).parent          # ~/cooja-sim/adaptive-pipeline/
+REPO_DIR      = BASE_DIR.parent                # ~/cooja-sim/
+RESULTS_DIR   = REPO_DIR / "results"
 MODELS_DIR    = Path("/home/mihoubrahma/Calibration models")
 POSITIONS     = BASE_DIR / "node_positions.json"
-TEMPLATES_DIR = BASE_DIR / "templates"
+TEMPLATES_DIR = REPO_DIR / "templates"
 MSG_SIZE      = 8
 N_NODES       = 20
 
@@ -99,7 +100,7 @@ def run_cooja_simulation(params, window_id, n_nodes, run_dir, sim_duration_min=2
     # (avoids a redundant intermediate CSC that run_cooja_only.sh would regenerate
     # with its own defaults, discarding the NN-predicted values)
     sim_cmd = [
-        "bash", str(BASE_DIR / "run_cooja_only.sh"),
+        "bash", str(REPO_DIR / "scripts" / "run_cooja_only.sh"),
         "-d", str(sim_duration_min),
         "-p", str(positions_path),
         "-g", "40",
@@ -109,13 +110,13 @@ def run_cooja_simulation(params, window_id, n_nodes, run_dir, sim_duration_min=2
         "-x", f"{params['rx_sensitivity']:.4f}",
     ]
     print(f"  [SIM] Running Cooja for window {window_id} ...")
-    r = subprocess.run(sim_cmd, capture_output=True, text=True, cwd=str(BASE_DIR))
+    r = subprocess.run(sim_cmd, capture_output=True, text=True, cwd=str(REPO_DIR))
     if r.returncode != 0:
         print(f"  [SIM ERROR] {r.stderr.strip()[:200]}")
         return None
 
     # 7 — find the cooja output folder just created and move it under sim_dir
-    cooja_runs = sorted(_glob.glob(str(BASE_DIR / "results" / "cooja_*")))
+    cooja_runs = sorted(_glob.glob(str(REPO_DIR / "results" / "cooja_*")))
     if not cooja_runs:
         print(f"  [ERROR] cooja output folder not found")
         return None
