@@ -1,0 +1,117 @@
+{
+  "site": "grenoble",
+  "receiver_id": "95",
+  "fetched_at": "2026-04-07T13:30:22.951607",
+  "nodes": {
+    "95": {
+      "x": 0.4,
+      "y": 26.52,
+      "z": -0.04,
+      "state": "Alive",
+      "uid": "a770",
+      "network_address": "m3-95.grenoble.iot-lab.info",
+      "role": "receiver",
+      "cooja_id": 1
+    },
+    "96": {
+      "x": 1.0,
+      "y": 26.52,
+      "z": -0.04,
+      "state": "Alive",
+      "uid": "b468",
+      "network_address": "m3-96.grenoble.iot-lab.info",
+      "role": "sender",
+      "cooja_id": 8
+    },
+    "97": {
+      "x": 0.4,
+      "y": 25.92,
+      "z": -0.04,
+      "state": "Alive",
+      "uid": "b179",
+      "network_address": "m3-97.grenoble.iot-lab.info",
+      "role": "sender",
+      "cooja_id": 9
+    },
+    "98": {
+      "x": 1.0,
+      "y": 25.92,
+      "z": -0.04,
+      "state": "Alive",
+      "uid": "b069",
+      "network_address": "m3-98.grenoble.iot-lab.info",
+      "role": "sender",
+      "cooja_id": 10
+    },
+    "99": {
+      "x": 0.4,
+      "y": 25.23,
+      "z": -0.04,
+      "state": "Alive",
+      "uid": "b277",
+      "network_address": "m3-99.grenoble.iot-lab.info",
+      "role": "sender",
+      "cooja_id": 11
+    },
+    "100": {
+      "x": 1.0,
+      "y": 25.23,
+      "z": -0.04,
+      "state": "Alive",
+      "uid": "b080",
+      "network_address": "m3-100.grenoble.iot-lab.info",
+      "role": "sender",
+      "cooja_id": 2
+    },
+    "101": {
+      "x": 0.4,
+      "y": 24.63,
+      "z": -0.04,
+      "state": "Alive",
+      "uid": "9181",
+      "network_address": "m3-101.grenoble.iot-lab.info",
+      "role": "sender",
+      "cooja_id": 3
+    },
+    "102": {
+      "x": 1.0,
+      "y": 24.63,
+      "z": -0.04,
+      "state": "Alive",
+      "uid": "a881",
+      "network_address": "m3-102.grenoble.iot-lab.info",
+      "role": "sender",
+      "cooja_id": 4
+    },
+    "103": {
+      "x": 0.4,
+      "y": 24.03,
+      "z": -0.04,
+      "state": "Alive",
+      "uid": "9881",
+      "network_address": "m3-103.grenoble.iot-lab.info",
+      "role": "sender",
+      "cooja_id": 5
+    },
+    "104": {
+      "x": 1.0,
+      "y": 24.03,
+      "z": -0.04,
+      "state": "Alive",
+      "uid": "a775",
+      "network_address": "m3-104.grenoble.iot-lab.info",
+      "role": "sender",
+      "cooja_id": 6
+    },
+    "105": {
+      "x": 0.4,
+      "y": 23.43,
+      "z": -0.04,
+      "state": "Alive",
+      "uid": "b576",
+      "network_address": "m3-105.grenoble.iot-lab.info",
+      "role": "sender",
+      "cooja_id": 7
+    }
+  }
+}

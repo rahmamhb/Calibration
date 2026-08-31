@@ -1,0 +1,14 @@
+results/
+what-if/dataset_runs/
+what-if/firmware/
+scenarios-setup/dataset_runs_*/
+logs/
+dataset_runs/
+contiki-firmware/*/build*/
+
+.claude/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.venv/
+*.bak
