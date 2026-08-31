@@ -1,5 +1,5 @@
 ============================================================
-COOJA LOGISTICLOSS — PARAMETER COMBINATION SUMMARY
+COOJA LOGISTICLOSS -- PARAMETER COMBINATION SUMMARY
 ============================================================
 
   RX_SENSITIVITY_DBM
@@ -7,38 +7,40 @@ COOJA LOGISTICLOSS — PARAMETER COMBINATION SUMMARY
     count = 1
 
   RSSI_INFLECTION_POINT
-    range  = [-120, -30]
-    step   = 5
-    values = [-120.0, -115.0, -110.0, -105.0, -100.0, -95.0, -90.0, -85.0, -80.0, -75.0, -70.0, -65.0, -60.0, -55.0, -50.0, -45.0, -40.0, -35.0, -30.0]
-    count  = 19
+    min    = -120
+    max    = -30
+    values = [-120.0, -115.0, -110.0, -105.0, -100.0, -95.0, -90.0, -85.0, -83.0, -80.0, -78.0, -75.0, -73.0, -70.0, -68.0, -65.0, -60.0, -55.0, -50.0, -45.0, -40.0, -35.0, -30.0]
+    count  = 23
 
   TRANSMITTING_RANGE
-    range  = [30, 50]
-    step   = 10
-    values = [30.0, 40.0, 50.0]
-    count  = 3
+    fixed = 40
+    count = 1
 
   PATH_LOSS_EXPONENT
-    range  = [1.0, 5.0]
-    step   = 0.25
+    min    = 1
+    max    = 5
     values = [1.0, 1.25, 1.5, 1.75, 2.0, 2.25, 2.5, 2.75, 3.0, 3.25, 3.5, 3.75, 4.0, 4.25, 4.5, 4.75, 5.0]
     count  = 17
 
   AWGN_SIGMA
-    range  = [1.0, 14.0]
-    step   = 1.5
-    values = [1.0, 2.5, 4.0, 5.5, 7.0, 8.5, 10.0, 11.5, 13.0]
-    count  = 9
+    min    = 1
+    max    = 23
+    values = [1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5, 6.0, 6.5, 7.0, 7.5, 8.0, 8.5, 9.0, 9.5, 10.0, 10.5, 11.0, 11.5, 12.0, 12.5, 13.0, 13.5, 14.0, 15.0, 17.0, 20.0, 22.0, 23.0]
+    count  = 32
 
 ------------------------------------------------------------
-  Total combinations : 8,721
+  Total combinations : 8,940
+  Distinct (RSSI_INFLECTION_POINT, AWGN_SIGMA) pairs : 556
+    - with full 17-value PATH_LOSS_EXPONENT sweep : 513
+    - with partial PATH_LOSS_EXPONENT coverage    : 43
+------------------------------------------------------------
 
-  Estimated simulation time (11 min/sim):
-      1 machine(s) → 66d 14h
-      4 machine(s) → 16d 15h
-      8 machine(s) → 8d 7h
-     16 machine(s) → 4d 3h
-     32 machine(s) → 2d 1h
-     64 machine(s) → 1d 0h
-
+Note: this is not a single clean cartesian grid. RSSI_INFLECTION_POINT
+and AWGN_SIGMA carry extra points added in later rounds (refining/
+extending the original sweep), and a small number of
+(RSSI_INFLECTION_POINT, AWGN_SIGMA) pairs only have partial
+PATH_LOSS_EXPONENT coverage rather than the full 17-value sweep.
+generate_combinations.py in this directory produces the full clean
+cartesian grid from the same value lists for extending the study;
+it is a superset of what exists here, not a byte-identical replay.
 ============================================================
